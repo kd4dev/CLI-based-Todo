@@ -1,4 +1,4 @@
-odo CLI with Commander.js & Chalk
+Todo CLI with Commander.js & Chalk
 
 A simple **Command-Line Interface (CLI)** tool to manage your todos using **Node.js**, **commander.js**, and **chalk**.  
 Supports adding, deleting, and marking tasks as done — all stored in a text file.
