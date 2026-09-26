@@ -4,17 +4,18 @@ A production-quality, beginner-readable Todo application for the terminal. It st
 
 ## Features
 
-- Add, view, update, complete, reopen, and delete todos
-- Descriptions, priorities, due dates, tags, timestamps, and stable IDs
-- Filter by status, priority, tag, or due-date range
-- Sort by created/updated date, priority, due date, or title
-- Search titles, descriptions, and tags
-- Helpful help, validation, empty states, and non-zero errors
-- Atomic JSON writes and clear malformed-storage errors
+- **CRUD**: Add, view, update, complete, reopen, and delete todos
+- **Rich fields**: Descriptions, priorities (low/medium/high), due dates, tags, timestamps, and stable IDs
+- **Filtering**: By status, priority, tag, or due-date range
+- **Sorting**: By created/updated date, priority, due date, or title
+- **Search**: Across titles, descriptions, and tags
+- **Interactive TUI**: Full-screen keyboard-driven terminal UI with Ink
+- **Atomic writes**: JSON persistence with temporary-file replacement
+- **Validation**: Helpful error messages for invalid input
 
 ## Tech stack
 
-JavaScript, Node.js 18+, Commander, Chalk, and Node's built-in `fs/promises` and test runner. There is no database or backend.
+JavaScript, Node.js 20+, Commander, Chalk, Ink 5, React 18, and Node's built-in `fs/promises` and test runner. There is no database or backend.
 
 ## Installation
 
@@ -24,70 +25,190 @@ cd CLI-based-Todo
 npm install
 ```
 
-Run with `npm start ...`, or expose the command locally with `npm link` and use `todo ...`.
-
-## Usage
+### Make the `todo` command available globally (optional)
 
 ```bash
-npm start add "Learn DSA" --description "Practice arrays" --priority high --due-date 2026-10-01 --tag study
-npm start list
-npm start list --status active --priority high --sort due
-npm start view <id>
-npm start update <id> "Learn graphs" --priority medium
-npm start complete <id>
-npm start uncomplete <id>
-npm start delete <id>
-npm start search "DSA"
-npm start --help
+npm link
 ```
 
-## Interactive terminal UI
+Now you can use `todo` directly instead of `npm start`.
 
-Run npm start with no subcommand in an interactive terminal to open the colorful keyboard-driven Todo UI.
+## Quick Start
 
-    npm start
+```bash
+# Add your first todo
+npm start add "Learn DSA" --priority high --due-date 2026-10-01 --tag study
 
-Use Up/Down or j/k to select a todo, Enter to view it, a to add, e to edit, Space to complete or reopen, slash to search, f to cycle status filters, s to change sorting, d to request deletion, question-mark for help, and q to quit. Delete requires confirmation. The TUI and regular commands use the same TodoService and JSON file.
+# List all todos
+npm start list
 
-## Command reference
+# Open the interactive TUI (just run with no arguments)
+npm start
+```
 
-| Command | Purpose |
+## CLI Usage
+
+### Adding todos
+
+```bash
+npm start add "Learn DSA"
+npm start add "Learn DSA" --description "Practice arrays" --priority high
+npm start add "Learn DSA" --due-date 2026-10-01 --tag study --tag coding
+```
+
+### Listing & filtering
+
+```bash
+npm start list
+npm start list --status active
+npm start list --priority high
+npm start list --tag study
+npm start list --due 2026-10-01
+npm start list --due-before 2026-12-31
+npm start list --due-after 2026-01-01
+npm start list --sort priority
+npm start list --status active --priority high --sort due
+```
+
+### Viewing, updating, completing, deleting
+
+```bash
+npm start view <id>             # View full details
+npm start update <id> "New Title" --priority low
+npm start update <id> --clear-description --clear-tags
+npm start complete <id>          # Mark done
+npm start uncomplete <id>        # Reopen
+npm start delete <id>            # Remove permanently
+```
+
+### Searching
+
+```bash
+npm start search "DSA"           # Searches title, description, and tags
+```
+
+### Help
+
+```bash
+npm start -- --help              # Show all commands
+npm start add --help             # Help for a specific command
+```
+
+## Interactive Terminal UI (TUI)
+
+Run `npm start` with no arguments in an interactive terminal:
+
+```bash
+npm start
+```
+
+### TUI Keyboard Shortcuts
+
+#### Navigation
+
+| Key | Action |
 | --- | --- |
-| `add <title>` | Create a todo; supports `--description`, `--priority`, `--due-date`, and repeatable `--tag` |
-| `list` | List todos; supports `--status`, `--priority`, `--tag`, `--due`, `--due-before`, `--due-after`, and `--sort` |
-| `view <id>` / `show <id>` | Display one todo |
-| `update <id> [title]` | Change fields; supports `--clear-description`, `--clear-due`, and `--clear-tags` |
-| `complete <id>` / `done <id>` | Mark completed |
-| `uncomplete <id>` / `undo <id>` | Mark active |
-| `delete <id>` / `remove <id>` | Delete permanently |
-| `search <term>` | Search title, description, and tags |
+| `↑` / `↓` or `j` / `k` | Navigate up/down through todos |
+| `Enter` | View selected todo details |
+| `Esc` | Go back to previous screen |
+| `q` | Quit (from list screen) |
+| `Ctrl+C` | Force quit |
 
-Priorities are `low`, `medium`, and `high`. Dates must be `YYYY-MM-DD`.
+#### Actions
+
+| Key | Action |
+| --- | --- |
+| `a` | Add a new todo |
+| `e` | Edit the selected todo |
+| `Space` | Toggle complete/reopen the selected todo |
+| `d` | Delete the selected todo (asks for confirmation) |
+
+#### Filtering & Sorting
+
+| Key | Action |
+| --- | --- |
+| `/` | Open search |
+| `f` | Cycle status filter: all → active → completed → all |
+| `s` | Cycle sort mode: created → due → priority → alphabetical |
+
+#### Help
+
+| Key | Action |
+| --- | --- |
+| `?` | Show help screen with all shortcuts |
+
+### Add/Edit Form Shortcuts
+
+| Key | Action |
+| --- | --- |
+| `Tab` / `↑` / `↓` | Move between fields |
+| `Enter` | Next field, or submit on last field |
+| **`←` / `→` (Left/Right arrows)** | **Change priority (cycles: low ↔ medium ↔ high)** |
+| `Ctrl+S` | Save and close form |
+| `Esc` | Cancel and go back |
+
+> **💡 Tip**: When the cursor is on the **Priority** field, use `←` (left arrow) and `→` (right arrow) to cycle through `low`, `medium`, and `high`. You cannot type priority manually — arrows are the only way to change it.
+
+### Delete Confirmation
+
+| Key | Action |
+| --- | --- |
+| `Enter` or `y` | Confirm deletion |
+| `Esc` or `n` | Cancel deletion |
+
+## Command Reference
+
+| Command | Aliases | Purpose |
+| --- | --- | --- |
+| `add <title>` | — | Create a todo with `--description`, `--priority`, `--due-date`, and repeatable `--tag` |
+| `list` | — | List todos with `--status`, `--priority`, `--tag`, `--due`, `--due-before`, `--due-after`, and `--sort` |
+| `view <id>` | `show` | Display one todo in detail |
+| `update <id> [title]` | — | Change fields; supports `--clear-description`, `--clear-due`, and `--clear-tags` |
+| `complete <id>` | `done` | Mark completed |
+| `uncomplete <id>` | `undo` | Mark active |
+| `delete <id>` | `remove` | Delete permanently |
+| `search <term>` | — | Search title, description, and tags |
+
+### Priority Values
+
+| Value | Color | Meaning |
+| --- | --- | --- |
+| `low` | 🟢 Green | Low urgency |
+| `medium` | 🟡 Yellow | Default |
+| `high` | 🔴 Red | Urgent |
+
+Dates must be in `YYYY-MM-DD` format.
 
 ## Architecture
 
 ```
-CLI (Commander)
-  -> command handlers and formatting
-  -> TodoService (validation and business rules)
-  -> JsonTodoRepository (file persistence)
-  -> data/todos.json
+User
+  → index.js (entry point with shebang)
+  → src/cli.js (Commander parser + TUI launcher)
+      ↓ CLI mode                    ↓ TUI mode (no args + TTY)
+      Commander commands            src/tui/app.js (Ink + React)
+      ↓                            ↓
+  → src/services/todoService.js (shared business logic)
+  → src/storage/jsonTodoRepository.js (file persistence)
+  → data/todos.json
 ```
 
 The default data file is created relative to the project directory. It is ignored by Git so personal todos are not committed.
 
-## Project structure
+## Project Structure
 
-- `index.js` — executable entry point
-- `src/cli.js` — commands, options, dispatch, and top-level error handling
-- `src/services/todoService.js` — CRUD, filtering, sorting, searching, and state changes
-- `src/storage/jsonTodoRepository.js` — JSON initialization, reads, and atomic writes
-- `src/validation.js` — shared field validation and normalization
-- `src/formatting.js` — terminal presentation
-- `src/tui/app.js` — Ink screens, keyboard input, and temporary UI state
-- `src/errors.js` — application and not-found errors
-- `test/todoService.test.js` — isolated service and persistence tests
-- `reverse_enginner.md` — codebase-specific learning guide
+| File | Purpose |
+| --- | --- |
+| `index.js` | Executable entry point |
+| `src/cli.js` | Commands, options, dispatch, and top-level error handling |
+| `src/services/todoService.js` | CRUD, filtering, sorting, searching, and state changes |
+| `src/storage/jsonTodoRepository.js` | JSON initialization, reads, and atomic writes |
+| `src/validation.js` | Shared field validation and normalization |
+| `src/formatting.js` | Terminal presentation (colors, tables, detail cards) |
+| `src/tui/app.js` | Ink screens, keyboard input, and temporary UI state |
+| `src/errors.js` | Application and not-found errors |
+| `test/todoService.test.js` | Isolated service and persistence tests |
+| `reverse_engineer.md` | Codebase-specific learning guide (gitignored — for local study) |
 
 ## Testing
 
@@ -97,10 +218,36 @@ npm test
 
 Tests use temporary directories and never touch the real `data/todos.json`.
 
-## Design decisions
+## Environment Variables
 
-JSON keeps the project transparent and meets the local-file requirement. A repository hides file details from the service, making storage replaceable and tests isolated. Commander handles conventional CLI parsing while the service remains usable without a terminal. Ink 5 and React 18 provide the optional Node-18-compatible interactive presentation layer without adding a browser, backend, or JSX build step. Atomic temporary-file replacement reduces the chance of leaving half-written JSON.
+| Variable | Purpose | Default |
+| --- | --- | --- |
+| `TODO_DATA_FILE` | Custom path for the JSON storage file | `data/todos.json` |
+| `NO_COLOR` | Disable colors in terminal output | — |
 
-## Limitations and future improvements
+## Design Decisions
 
-This is a single-user local CLI: it has no locking for concurrent writers, undo/history, recurring tasks, reminders, or sync. Future additions could include import/export, backups, subtasks, projects, and a SQLite adapter; a REST API could reuse the service layer.
+- **JSON**: Transparent, inspectable, database-free local persistence
+- **Service layer**: Business rules testable without Commander or terminal output
+- **Repository pattern**: File details hidden behind a clean interface; storage is replaceable
+- **Commander**: Conventional help, flags, aliases, and parser errors with minimal code
+- **Chalk**: Semantic terminal colors that auto-disable when unsupported
+- **Ink 5 + React 18**: Interactive TUI without browser, JSX build step, or server; Node 20+ compatible
+- **Atomic writes**: Temporary file + rename reduces partial-file corruption risk
+- **Native test runner**: Node already supplies testing, no extra dependency needed
+
+## Limitations and Future Improvements
+
+This is a single-user local CLI. It currently lacks:
+- Undo/history
+- Recurring tasks and reminders
+- Subtasks and projects
+- Concurrent write locking
+- Import/export and backups
+- Sync across devices
+
+Future additions could include import/export, backups, subtasks, projects, a SQLite adapter, or a REST API that reuses the service layer.
+
+## License
+
+MIT

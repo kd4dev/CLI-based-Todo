@@ -45,7 +45,7 @@ function Footer({ screen, flash }) {
     ? "Tab/↑↓ fields  •  Enter next  •  Ctrl+S save  •  Esc cancel"
     : screen === "confirm"
       ? "Enter confirm  •  Esc cancel"
-      : "↑↓/j k navigate  •  Enter view  •  a add  •  e edit  •  Space toggle  •  / search  •  f filter  •  s sort  •  ? help  •  q quit"
+      : "↑↓/j k navigate  •  Enter view  •  a add  •  e edit  •  Space toggle  •  d delete  •  / search  •  f filter  •  s sort  •  ←→ priority  •  ? help  •  Esc back  •  q quit"
   const narrow = (process.stdout.columns || 80) < 60
   const shortcutLines = narrow && screen !== "form" && screen !== "confirm"
     ? ["↑↓ select • Enter view • a add • e edit", "Space toggle • / search • f filter • s sort", "d delete • ? help • q quit"]
