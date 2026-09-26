@@ -13,10 +13,6 @@ A production-quality, beginner-readable Todo application for the terminal. It st
 - **Atomic writes**: JSON persistence with temporary-file replacement
 - **Validation**: Helpful error messages for invalid input
 
-## Tech stack
-
-JavaScript, Node.js 20+, Commander, Chalk, Ink 5, React 18, and Node's built-in `fs/promises` and test runner. There is no database or backend.
-
 ## Installation
 
 ```bash
