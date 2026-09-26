@@ -2,22 +2,6 @@
 
 A production-quality, beginner-readable Todo application for the terminal. It stores todos locally in JSON and keeps the CLI, business logic, and persistence layers separate.
 
-## About Me (Public Profile)
-
-- **GitHub Username:** [@kd4dev](https://github.com/kd4dev)
-- **All Public Repositories:** [github.com/kd4dev?tab=repositories](https://github.com/kd4dev?tab=repositories)
-- **LeetCode:** [leetcode.com/u/kd4dev](https://leetcode.com/u/kd4dev/)
-
-### Skills Snapshot
-
-- JavaScript / TypeScript / Node.js
-- React and terminal UI development (Ink)
-- Backend development and API-focused projects
-- Authentication and security basics (JWT)
-- Data structures and algorithms (C++)
-- System design practice
-- Machine learning exploration (Jupyter Notebook)
-
 ## Features
 
 - **CRUD**: Add, view, update, complete, reopen, and delete todos
