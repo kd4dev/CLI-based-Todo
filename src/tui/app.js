@@ -15,14 +15,21 @@ function TodoRow({ todo, selected, width }) {
   const overdue = isOverdue(todo)
   const icon = overdue ? "!" : todo.status === "completed" ? "●" : "○"
   const color = overdue ? "red" : todo.status === "completed" ? "green" : "cyan"
-  const titleWidth = Math.max(18, width - 36)
+  const titleWidth = Math.max(18, width - 38)
+  const cursor = selected ? "▸ " : "  "
   return h(Box, { paddingX: 1 },
-    h(Text, { color, inverse: selected }, icon + " "),
-    h(Text, { dimColor: true, inverse: selected }, todo.id + " "),
-    h(Text, { strikethrough: todo.status === "completed", dimColor: todo.status === "completed", inverse: selected }, compact(todo.title, titleWidth)),
+    h(Text, { color: "cyan", bold: selected }, cursor),
+    h(Text, { color }, icon + " "),
+    h(Text, { dimColor: !selected, color: selected ? "cyan" : undefined }, todo.id + " "),
+    h(Text, { 
+      strikethrough: todo.status === "completed", 
+      dimColor: todo.status === "completed" && !selected, 
+      color: selected ? "cyan" : undefined, 
+      bold: selected 
+    }, compact(todo.title, titleWidth)),
     h(Box, { flexGrow: 1 }),
-    h(Text, { color: priorityColor[todo.priority], inverse: selected }, todo.priority.toUpperCase()),
-    h(Text, { dimColor: true, inverse: selected }, "  " + (todo.dueDate ? displayDate(todo.dueDate) : "—"))
+    h(Text, { color: priorityColor[todo.priority] }, todo.priority.toUpperCase()),
+    h(Text, { dimColor: !selected, color: selected ? "cyan" : undefined }, "  " + (todo.dueDate ? displayDate(todo.dueDate) : "—"))
   )
 }
 
