@@ -28,70 +28,80 @@ npm install
 ### Make the `todo` command available globally (optional)
 
 ```bash
-npm link
+sudo npm link
 ```
 
-Now you can use `todo` directly instead of `npm start`.
+Now you can use `todo` directly instead of `npm start --`.
 
 ## Quick Start
 
 ```bash
 # Add your first todo
-npm start add "Learn DSA" --priority high --due-date 2026-10-01 --tag study
+node index.js add "Learn DSA" --priority high --due-date 2026-10-01 --tag study
 
 # List all todos
-npm start list
+node index.js list
 
 # Open the interactive TUI (just run with no arguments)
 npm start
 ```
+
+> **⚠️ Important**: When using `npm start`, add `--` before flags so npm doesn't swallow them:
+> ```bash
+> npm start -- add "Learn DSA" --priority high    # ✅ correct
+> npm start add "Learn DSA" --priority high        # ❌ npm eats --priority
+> ```
+> Or use `node index.js` directly — no `--` needed:
+> ```bash
+> node index.js add "Learn DSA" --priority high    # ✅ always works
+> ```
 
 ## CLI Usage
 
 ### Adding todos
 
 ```bash
-npm start add "Learn DSA"
-npm start add "Learn DSA" --description "Practice arrays" --priority high
-npm start add "Learn DSA" --due-date 2026-10-01 --tag study --tag coding
+node index.js add "Learn DSA"
+node index.js add "Learn DSA" --description "Practice arrays" --priority high
+node index.js add "Learn DSA" --due-date 2026-10-01 --tag study --tag coding
 ```
 
 ### Listing & filtering
 
 ```bash
-npm start list
-npm start list --status active
-npm start list --priority high
-npm start list --tag study
-npm start list --due 2026-10-01
-npm start list --due-before 2026-12-31
-npm start list --due-after 2026-01-01
-npm start list --sort priority
-npm start list --status active --priority high --sort due
+node index.js list
+node index.js list --status active
+node index.js list --priority high
+node index.js list --tag study
+node index.js list --due 2026-10-01
+node index.js list --due-before 2026-12-31
+node index.js list --due-after 2026-01-01
+node index.js list --sort priority
+node index.js list --status active --priority high --sort due
 ```
 
 ### Viewing, updating, completing, deleting
 
 ```bash
-npm start view <id>             # View full details
-npm start update <id> "New Title" --priority low
-npm start update <id> --clear-description --clear-tags
-npm start complete <id>          # Mark done
-npm start uncomplete <id>        # Reopen
-npm start delete <id>            # Remove permanently
+node index.js view <id>             # View full details
+node index.js update <id> "New Title" --priority low
+node index.js update <id> --clear-description --clear-tags
+node index.js complete <id>          # Mark done
+node index.js uncomplete <id>        # Reopen
+node index.js delete <id>            # Remove permanently
 ```
 
 ### Searching
 
 ```bash
-npm start search "DSA"           # Searches title, description, and tags
+node index.js search "DSA"           # Searches title, description, and tags
 ```
 
 ### Help
 
 ```bash
-npm start -- --help              # Show all commands
-npm start add --help             # Help for a specific command
+node index.js --help                 # Show all commands
+node index.js add --help             # Help for a specific command
 ```
 
 ## Interactive Terminal UI (TUI)
@@ -208,7 +218,6 @@ The default data file is created relative to the project directory. It is ignore
 | `src/tui/app.js` | Ink screens, keyboard input, and temporary UI state |
 | `src/errors.js` | Application and not-found errors |
 | `test/todoService.test.js` | Isolated service and persistence tests |
-| `reverse_engineer.md` | Codebase-specific learning guide (gitignored — for local study) |
 
 ## Testing
 

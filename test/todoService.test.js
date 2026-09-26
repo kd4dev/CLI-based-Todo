@@ -57,6 +57,14 @@ test("rejects invalid input and missing todos", async () => {
   await assert.rejects(() => service.get("missing"), NotFoundError)
 })
 
+test("rejects non-string priority values", async () => {
+  const { service } = await setup()
+  await assert.rejects(() => service.create({ title: "Test", priority: null }), AppError)
+  await assert.rejects(() => service.create({ title: "Test", priority: 42 }), AppError)
+  await assert.rejects(() => service.create({ title: "Test", priority: true }), AppError)
+  await assert.rejects(() => service.update("fake", { priority: undefined }), { name: "NotFoundError" })
+})
+
 test("missing storage initializes as empty and malformed storage is reported", async () => {
   const { repository } = await setup()
   assert.deepEqual(await repository.readAll(), [])
