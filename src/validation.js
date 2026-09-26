@@ -13,6 +13,7 @@ export function optionalText(value, field) {
   return value.trim()
 }
 export function priority(value = "medium") {
+  if (typeof value !== "string") throw new AppError(`Priority must be one of: ${PRIORITIES.join(", ")}.`)
   const normalized = value.toLowerCase()
   if (!PRIORITIES.includes(normalized)) throw new AppError(`Priority must be one of: ${PRIORITIES.join(", ")}.`)
   return normalized
