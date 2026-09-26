@@ -18,28 +18,6 @@ A production-quality, beginner-readable Todo application for the terminal. It st
 - System design practice
 - Machine learning exploration (Jupyter Notebook)
 
-### Public Repositories
-
-- [CLI-based-Todo](https://github.com/kd4dev/CLI-based-Todo)
-- [Ml](https://github.com/kd4dev/Ml)
-- [System-Design-Simulator](https://github.com/kd4dev/System-Design-Simulator)
-- [loan_](https://github.com/kd4dev/loan_)
-- [abcd](https://github.com/kd4dev/abcd)
-- [learnReact](https://github.com/kd4dev/learnReact)
-- [build-my-own-shell](https://github.com/kd4dev/build-my-own-shell)
-- [backend-of-project-management-system](https://github.com/kd4dev/backend-of-project-management-system)
-- [Backend-of-Scalable-URL-Shortner](https://github.com/kd4dev/Backend-of-Scalable-URL-Shortner)
-- [react-test](https://github.com/kd4dev/react-test)
-- [backend-of-a-scalable-subscription-model](https://github.com/kd4dev/backend-of-a-scalable-subscription-model)
-- [EcoFind](https://github.com/kd4dev/EcoFind)
-- [learnDSA](https://github.com/kd4dev/learnDSA)
-- [plasticTrack](https://github.com/kd4dev/plasticTrack)
-- [MentalTrack](https://github.com/kd4dev/MentalTrack)
-- [JWTAuthentication](https://github.com/kd4dev/JWTAuthentication)
-- [firstBackendProject](https://github.com/kd4dev/firstBackendProject)
-- [learnJavascript](https://github.com/kd4dev/learnJavascript)
-- [learn-git-and-github](https://github.com/kd4dev/learn-git-and-github)
-
 ## Features
 
 - **CRUD**: Add, view, update, complete, reopen, and delete todos
