@@ -61,8 +61,8 @@ export function createProgram(service = serviceFor()) {
     const all = await service.list()
     const active = all.filter((t) => t.status === "active").length
     const completed = all.length - active
-    const today = new Date().toISOString().slice(0, 10)
-    const overdue = all.filter((t) => t.status === "active" && t.dueDate && t.dueDate < today).length
+    const overdueList = await service.list({ overdue: true })
+    const overdue = overdueList.length
     console.log(chalk.cyan.bold("TODO COUNTS") + "\n" + chalk.dim("─".repeat(40)))
     console.log(`Total:     ${all.length}\nActive:    ${active}\nCompleted: ${completed}\nOverdue:   ${chalk.red(overdue)}`)
   })

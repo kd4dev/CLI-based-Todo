@@ -57,12 +57,30 @@ test("rejects invalid input and missing todos", async () => {
   await assert.rejects(() => service.get("missing"), NotFoundError)
 })
 
-test("rejects non-string priority values", async () => {
+test("filters overdue todos with deterministic clock", async () => {
+  const { service } = await setup()
+  // Mock today as 2026-01-05
+  service.clock = () => new Date("2026-01-05T10:00:00.000Z")
+  const pastDue = await service.create({ title: "Past Due", dueDate: "2026-01-01" })
+  const dueToday = await service.create({ title: "Due Today", dueDate: "2026-01-05" })
+  const futureDue = await service.create({ title: "Future", dueDate: "2026-01-10" })
+  const completedPastDue = await service.create({ title: "Done Past Due", dueDate: "2026-01-01" })
+  await service.setCompleted(completedPastDue.id, true)
+
+  const overdueList = await service.list({ overdue: true })
+  assert.equal(overdueList.length, 1)
+  assert.equal(overdueList[0].id, pastDue.id)
+})
+
+test("rejects non-string priority values on create and update", async () => {
   const { service } = await setup()
   await assert.rejects(() => service.create({ title: "Test", priority: null }), AppError)
   await assert.rejects(() => service.create({ title: "Test", priority: 42 }), AppError)
   await assert.rejects(() => service.create({ title: "Test", priority: true }), AppError)
-  await assert.rejects(() => service.update("fake", { priority: undefined }), { name: "NotFoundError" })
+  
+  const todo = await service.create({ title: "Test", priority: "medium" })
+  await assert.rejects(() => service.update(todo.id, { priority: null }), AppError)
+  await assert.rejects(() => service.update(todo.id, { priority: 42 }), AppError)
 })
 
 test("missing storage initializes as empty and malformed storage is reported", async () => {

@@ -48,15 +48,22 @@ export class TodoService {
     const todos = await this.repository.readAll(); const index = todos.findIndex((todo) => todo.id === todoId(id))
     if (index === -1) throw new NotFoundError(id)
     const current = todos[index]
-    const next = { ...current, ...(changes.title !== undefined && { title: requiredTitle(changes.title) }), ...(changes.description !== undefined && { description: optionalText(changes.description, "Description") }), ...(changes.priority !== undefined && { priority: priority(changes.priority) }), ...(changes.dueDate !== undefined && { dueDate: dueDate(changes.dueDate) }), ...(changes.tags !== undefined && { tags: tags(changes.tags) }), ...(changes.status !== undefined && { status: status(changes.status) }), ...(changes.completedAt !== undefined && { completedAt: changes.completedAt }), updatedAt: this.clock().toISOString() }
+    let nextStatus = current.status
+    let nextCompletedAt = current.completedAt
+    if (changes.status !== undefined) {
+      nextStatus = status(changes.status)
+      if (nextStatus !== current.status) {
+        nextCompletedAt = nextStatus === "completed" ? this.clock().toISOString() : null
+      }
+    }
+    if (changes.completedAt !== undefined) nextCompletedAt = changes.completedAt
+
+    const next = { ...current, ...(changes.title !== undefined && { title: requiredTitle(changes.title) }), ...(changes.description !== undefined && { description: optionalText(changes.description, "Description") }), ...(changes.priority !== undefined && { priority: priority(changes.priority) }), ...(changes.dueDate !== undefined && { dueDate: dueDate(changes.dueDate) }), ...(changes.tags !== undefined && { tags: tags(changes.tags) }), status: nextStatus, completedAt: nextCompletedAt, updatedAt: this.clock().toISOString() }
     todos[index] = next; await this.repository.writeAll(todos); return next
   }
   async setCompleted(id, completed) {
     const todo = await this.get(id);
-    return this.update(todo.id, {
-      status: completed ? "completed" : "active",
-      completedAt: completed ? this.clock().toISOString() : null
-    })
+    return this.update(todo.id, { status: completed ? "completed" : "active" })
   }
   async remove(id) {
     const todos = await this.repository.readAll(); const index = todos.findIndex((todo) => todo.id === todoId(id))
