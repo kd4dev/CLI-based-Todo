@@ -27,8 +27,16 @@ npm install
 
 ### Make the `todo` command available globally (optional)
 
+**For macOS / Linux:**
 ```bash
 sudo npm link
+```
+
+**For Windows (Run PowerShell/Command Prompt as Administrator):**
+```bash
+npm link
+# Or if that fails:
+npm i -g .
 ```
 
 Now you can use `todo` directly instead of `npm start --`.
@@ -74,10 +82,17 @@ node index.js list --status active
 node index.js list --priority high
 node index.js list --tag study
 node index.js list --due 2026-10-01
+node index.js list --overdue          # Show only overdue todos
 node index.js list --due-before 2026-12-31
 node index.js list --due-after 2026-01-01
 node index.js list --sort priority
 node index.js list --status active --priority high --sort due
+```
+
+### Counting todos
+
+```bash
+node index.js count                  # View summary of total, active, completed, overdue
 ```
 
 ### Viewing, updating, completing, deleting

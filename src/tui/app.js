@@ -15,10 +15,8 @@ function TodoRow({ todo, selected, width }) {
   const overdue = isOverdue(todo)
   const icon = overdue ? "!" : todo.status === "completed" ? "●" : "○"
   const color = overdue ? "red" : todo.status === "completed" ? "green" : "cyan"
-  const titleWidth = Math.max(18, width - 38)
-  const cursor = selected ? "▸ " : "  "
+  const titleWidth = Math.max(18, width - 36)
   return h(Box, { paddingX: 1 },
-    h(Text, { color: selected ? "cyan" : undefined, bold: selected, inverse: selected }, cursor),
     h(Text, { color, inverse: selected }, icon + " "),
     h(Text, { dimColor: true, inverse: selected }, todo.id + " "),
     h(Text, { strikethrough: todo.status === "completed", dimColor: todo.status === "completed", inverse: selected }, compact(todo.title, titleWidth)),
