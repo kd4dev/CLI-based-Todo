@@ -39,29 +39,29 @@ npm link
 npm i -g .
 ```
 
-Now you can use `todo` directly instead of `npm start --`.
+Now you can use `todo` globally from **any folder** on your computer.
 
 ## Quick Start
 
 ```bash
 # Add your first todo
-node index.js add "Learn DSA" --priority high --due-date 2026-10-01 --tag study
+todo add "Learn DSA" --priority high --due-date 2026-10-01 --tag study
 
 # List all todos
-node index.js list
+todo list
 
 # Open the interactive TUI (just run with no arguments)
-npm start
+todo
 ```
 
-> **⚠️ Important**: When using `npm start`, add `--` before flags so npm doesn't swallow them:
+> **💡 Command Note**: All examples below use the globally installed `todo` command (which works in any folder). 
+> If you didn't install it globally with `npm link`, you must run these inside the project folder using `npm start --`.
+> 
+> Example: 
 > ```bash
-> npm start -- add "Learn DSA" --priority high    # ✅ correct
-> npm start add "Learn DSA" --priority high        # ❌ npm eats --priority
-> ```
-> Or use `node index.js` directly — no `--` needed:
-> ```bash
-> node index.js add "Learn DSA" --priority high    # ✅ always works
+> todo add "Learn DSA" --priority high                 # Global approach
+> npm start -- add "Learn DSA" --priority high         # Local approach (requires -- before flags!)
+> node index.js add "Learn DSA" --priority high        # Direct approach
 > ```
 
 ## CLI Usage
@@ -69,54 +69,54 @@ npm start
 ### Adding todos
 
 ```bash
-node index.js add "Learn DSA"
-node index.js add "Learn DSA" --description "Practice arrays" --priority high
-node index.js add "Learn DSA" --due-date 2026-10-01 --tag study --tag coding
+todo add "Learn DSA"
+todo add "Learn DSA" --description "Practice arrays" --priority high
+todo add "Learn DSA" --due-date 2026-10-01 --tag study --tag coding
 ```
 
 ### Listing & filtering
 
 ```bash
-node index.js list
-node index.js list --status active
-node index.js list --priority high
-node index.js list --tag study
-node index.js list --due 2026-10-01
-node index.js list --overdue          # Show only overdue todos
-node index.js list --due-before 2026-12-31
-node index.js list --due-after 2026-01-01
-node index.js list --sort priority
-node index.js list --status active --priority high --sort due
+todo list
+todo list --status active
+todo list --priority high
+todo list --tag study
+todo list --due 2026-10-01
+todo list --overdue          # Show only overdue todos
+todo list --due-before 2026-12-31
+todo list --due-after 2026-01-01
+todo list --sort priority
+todo list --status active --priority high --sort due
 ```
 
 ### Counting todos
 
 ```bash
-node index.js count                  # View summary of total, active, completed, overdue
+todo count                  # View summary of total, active, completed, overdue
 ```
 
 ### Viewing, updating, completing, deleting
 
 ```bash
-node index.js view <id>             # View full details
-node index.js update <id> "New Title" --priority low
-node index.js update <id> --clear-description --clear-tags
-node index.js complete <id>          # Mark done
-node index.js uncomplete <id>        # Reopen
-node index.js delete <id>            # Remove permanently
+todo view <id>             # View full details
+todo update <id> "New Title" --priority low
+todo update <id> --clear-description --clear-tags
+todo complete <id>         # Mark done
+todo uncomplete <id>       # Reopen
+todo delete <id>           # Remove permanently
 ```
 
 ### Searching
 
 ```bash
-node index.js search "DSA"           # Searches title, description, and tags
+todo search "DSA"          # Searches title, description, and tags
 ```
 
 ### Help
 
 ```bash
-node index.js --help                 # Show all commands
-node index.js add --help             # Help for a specific command
+todo --help                 # Show all commands
+todo add --help             # Help for a specific command
 ```
 
 ## Interactive Terminal UI (TUI)
