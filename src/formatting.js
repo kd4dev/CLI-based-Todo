@@ -47,6 +47,7 @@ export function formatTodoList(todos, filters = {}, label = "TODO LIST") {
     filters.due && "Due: " + filters.due,
     filters.dueBefore && "Due ≤ " + filters.dueBefore,
     filters.dueAfter && "Due ≥ " + filters.dueAfter,
+    filters.overdue && "Overdue",
     filters.sort && filters.sort !== "created" && "Sort: " + filters.sort,
   ].filter(Boolean).join("  •  ")
   if (!todos.length) return [heading(label, filterSummary), chalk.dim("  No todos found.")].join("\n")
@@ -79,6 +80,9 @@ export function formatDetails(todo) {
     "Created   " + chalk.dim(todo.createdAt.slice(0, 10)),
     "Updated   " + chalk.dim(todo.updatedAt.slice(0, 10)),
   ]
+  if (todo.completedAt) {
+    rows.push("Completed " + chalk.dim(todo.completedAt.slice(0, 10)))
+  }
   const boxRow = (value = "") => "│ " + pad(truncate(value, inner), inner) + " │"
   return [
     chalk.cyan("┌" + "─".repeat(width - 2) + "┐"),

@@ -27,7 +27,7 @@ export function createProgram(service = serviceFor()) {
     console.log(success("Todo created", "ID       " + todo.id + "\n  Title    " + todo.title + "\n  Priority " + todo.priority.toUpperCase() + "\n  Status   Active"))
   })
 
-  const list = program.command("list").description("List todos").option("-s, --status <status>", "active or completed").option("-p, --priority <priority>", "low, medium, or high").option("-t, --tag <tag>", "Filter by tag").option("--due <date>", "Due on date").option("--due-before <date>", "Due on or before date").option("--due-after <date>", "Due on or after date").option("--sort <field>", "created, updated, priority, due, or alphabetical", "created")
+  const list = program.command("list").description("List todos").option("-s, --status <status>", "active or completed").option("-p, --priority <priority>", "low, medium, or high").option("-t, --tag <tag>", "Filter by tag").option("--due <date>", "Due on date").option("--due-before <date>", "Due on or before date").option("--due-after <date>", "Due on or after date").option("--overdue", "Show only overdue todos").option("--sort <field>", "created, updated, priority, due, or alphabetical", "created")
   list.action(async (options) => {
     const todos = await service.list(options)
     console.log(formatTodoList(todos, options))
@@ -57,6 +57,16 @@ export function createProgram(service = serviceFor()) {
     console.log(output)
     if (!todos.length) console.log(chalk.dim("\nNo todos found for \"" + term + "\"."))
   })
+  program.command("count").description("Count todos by status").action(async () => {
+    const all = await service.list()
+    const active = all.filter((t) => t.status === "active").length
+    const completed = all.length - active
+    const today = new Date().toISOString().slice(0, 10)
+    const overdue = all.filter((t) => t.status === "active" && t.dueDate && t.dueDate < today).length
+    console.log(chalk.cyan.bold("TODO COUNTS") + "\n" + chalk.dim("─".repeat(40)))
+    console.log(`Total:     ${all.length}\nActive:    ${active}\nCompleted: ${completed}\nOverdue:   ${chalk.red(overdue)}`)
+  })
+
   return program
 }
 

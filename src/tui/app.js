@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react"
+import React, { useCallback, useEffect, useRef, useState } from "react"
 import { Box, Text, render, useApp, useInput } from "ink"
 import { displayDate, isOverdue } from "../formatting.js"
 
@@ -15,14 +15,16 @@ function TodoRow({ todo, selected, width }) {
   const overdue = isOverdue(todo)
   const icon = overdue ? "!" : todo.status === "completed" ? "●" : "○"
   const color = overdue ? "red" : todo.status === "completed" ? "green" : "cyan"
-  const titleWidth = Math.max(18, width - 36)
-  return h(Box, { paddingX: 1, backgroundColor: selected ? "blue" : undefined },
-    h(Text, { color }, icon + " "),
-    h(Text, { dimColor: true }, todo.id + " "),
-    h(Text, { strikethrough: todo.status === "completed", dimColor: todo.status === "completed" }, compact(todo.title, titleWidth)),
+  const titleWidth = Math.max(18, width - 38)
+  const cursor = selected ? "▸ " : "  "
+  return h(Box, { paddingX: 1 },
+    h(Text, { color: selected ? "cyan" : undefined, bold: selected, inverse: selected }, cursor),
+    h(Text, { color, inverse: selected }, icon + " "),
+    h(Text, { dimColor: true, inverse: selected }, todo.id + " "),
+    h(Text, { strikethrough: todo.status === "completed", dimColor: todo.status === "completed", inverse: selected }, compact(todo.title, titleWidth)),
     h(Box, { flexGrow: 1 }),
-    h(Text, { color: priorityColor[todo.priority] }, todo.priority.toUpperCase()),
-    h(Text, { dimColor: true }, "  " + (todo.dueDate ? displayDate(todo.dueDate) : "—"))
+    h(Text, { color: priorityColor[todo.priority], inverse: selected }, todo.priority.toUpperCase()),
+    h(Text, { dimColor: true, inverse: selected }, "  " + (todo.dueDate ? displayDate(todo.dueDate) : "—"))
   )
 }
 
@@ -42,10 +44,10 @@ function Header({ todos, status, sort }) {
 
 function Footer({ screen, flash }) {
   const shortcuts = screen === "form"
-    ? "Tab/↑↓ fields  •  Enter next  •  Ctrl+S save  •  Esc cancel"
+    ? "Tab/↑↓ fields  •  ←→ priority  •  Enter next  •  Ctrl+S save  •  Esc cancel"
     : screen === "confirm"
       ? "Enter confirm  •  Esc cancel"
-      : "↑↓/j k navigate  •  Enter view  •  a add  •  e edit  •  Space toggle  •  d delete  •  / search  •  f filter  •  s sort  •  ←→ priority  •  ? help  •  Esc back  •  q quit"
+      : "↑↓/j k navigate  •  Enter view  •  a add  •  e edit  •  Space toggle  •  d delete  •  / search  •  f filter  •  s sort  •  ? help  •  Esc back  •  q quit"
   const narrow = (process.stdout.columns || 80) < 60
   const shortcutLines = narrow && screen !== "form" && screen !== "confirm"
     ? ["↑↓ select • Enter view • a add • e edit", "Space toggle • / search • f filter • s sort", "d delete • ? help • q quit"]
@@ -68,7 +70,8 @@ function Detail({ todo }) {
     h(Text, null, "Due       ", todo.dueDate ? displayDate(todo.dueDate) : "—"),
     h(Text, null, "Tags      ", todo.tags.length ? todo.tags.map((tag) => "#" + tag).join(" ") : "—"),
     h(Text, { dimColor: true }, "Created   " + todo.createdAt.slice(0, 10)),
-    h(Text, { dimColor: true }, "Updated   " + todo.updatedAt.slice(0, 10))
+    h(Text, { dimColor: true }, "Updated   " + todo.updatedAt.slice(0, 10)),
+    todo.completedAt ? h(Text, { dimColor: true }, "Completed " + todo.completedAt.slice(0, 10)) : null
   )
 }
 
@@ -141,7 +144,13 @@ function App({ service }) {
   const [query, setQuery] = useState("")
   const [flash, setFlash] = useState(null)
   const [formError, setFormError] = useState("")
+  const todosRef = useRef(todos)
+  todosRef.current = todos
+  const selectedRef = useRef(selected)
+  selectedRef.current = selected
   const selectedTodo = todos[selected]
+  const selectedTodoRef = useRef(selectedTodo)
+  selectedTodoRef.current = selectedTodo
   const refresh = useCallback(async (nextStatus = status, nextSort = sort, nextQuery = query) => {
     try {
       const result = await service.list({ status: nextStatus || undefined, sort: nextSort, search: nextQuery || undefined })
@@ -162,21 +171,28 @@ function App({ service }) {
     if (screen === "form-add" || screen === "form-edit" || screen === "search") return
     if (key.ctrl && input === "c") return exit()
     if (screen === "confirm") {
+      const todo = selectedTodoRef.current
       if (key.escape || input === "n") return setScreen("list")
-      if (key.return || input === "y") return mutate(() => service.remove(selectedTodo.id), "Deleted " + selectedTodo.title)
+      if ((key.return || input === "y") && todo) return mutate(() => service.remove(todo.id), "Deleted " + todo.title)
       return
     }
     if (key.escape && screen !== "list") return setScreen("list")
     if (input === "q") return screen === "list" ? exit() : setScreen("list")
     if (screen === "help") return
     if (input === "?") return setScreen("help")
-    if (key.downArrow || input === "j") return setSelected(Math.min(selected + 1, Math.max(0, todos.length - 1)))
-    if (key.upArrow || input === "k") return setSelected(Math.max(selected - 1, 0))
-    if (key.return && selectedTodo) return setScreen("detail")
+    if (key.downArrow || input === "j") {
+      const max = Math.max(0, todosRef.current.length - 1)
+      return setSelected((prev) => Math.min(prev + 1, max))
+    }
+    if (key.upArrow || input === "k") {
+      return setSelected((prev) => Math.max(prev - 1, 0))
+    }
+    const todo = selectedTodoRef.current
+    if (key.return && todo) return setScreen("detail")
     if (input === "a") { setFormError(""); setScreen("form-add") }
-    if (input === "e" && selectedTodo) { setFormError(""); setScreen("form-edit") }
-    if (input === "d" && selectedTodo) return setScreen("confirm")
-    if (input === " ") return selectedTodo && mutate(() => service.setCompleted(selectedTodo.id, selectedTodo.status !== "completed"), selectedTodo.status === "completed" ? "Reopened " + selectedTodo.title : "Completed " + selectedTodo.title)
+    if (input === "e" && todo) { setFormError(""); setScreen("form-edit") }
+    if (input === "d" && todo) return setScreen("confirm")
+    if (input === " ") return todo && mutate(() => service.setCompleted(todo.id, todo.status !== "completed"), todo.status === "completed" ? "Reopened " + todo.title : "Completed " + todo.title)
     if (input === "/") return setScreen("search")
     if (input === "f") {
       const next = status === "" ? "active" : status === "active" ? "completed" : ""

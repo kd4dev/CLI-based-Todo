@@ -6,7 +6,7 @@ export class TodoService {
   constructor(repository, clock = () => new Date()) { this.repository = repository; this.clock = clock }
   async create(input) {
     const now = this.clock().toISOString()
-    const todo = { id: randomUUID().slice(0, 8), title: requiredTitle(input.title), description: optionalText(input.description, "Description") ?? "", status: "active", priority: priority(input.priority), createdAt: now, updatedAt: now, dueDate: dueDate(input.dueDate), tags: tags(input.tags) }
+    const todo = { id: randomUUID().slice(0, 8), title: requiredTitle(input.title), description: optionalText(input.description, "Description") ?? "", status: "active", priority: priority(input.priority), createdAt: now, updatedAt: now, completedAt: null, dueDate: dueDate(input.dueDate), tags: tags(input.tags) }
     const todos = await this.repository.readAll(); todos.push(todo); await this.repository.writeAll(todos); return todo
   }
   async get(id) {
@@ -22,6 +22,10 @@ export class TodoService {
     if (filters.due) todos = todos.filter((todo) => todo.dueDate === dueDate(filters.due))
     if (filters.dueBefore) todos = todos.filter((todo) => todo.dueDate && todo.dueDate <= dueDate(filters.dueBefore))
     if (filters.dueAfter) todos = todos.filter((todo) => todo.dueDate && todo.dueDate >= dueDate(filters.dueAfter))
+    if (filters.overdue) {
+      const today = this.clock().toISOString().slice(0, 10)
+      todos = todos.filter((todo) => todo.status === "active" && todo.dueDate && todo.dueDate < today)
+    }
     if (filters.search) todos = this.searchIn(todos, filters.search)
     return this.sort(todos, filters.sort)
   }
@@ -44,10 +48,16 @@ export class TodoService {
     const todos = await this.repository.readAll(); const index = todos.findIndex((todo) => todo.id === todoId(id))
     if (index === -1) throw new NotFoundError(id)
     const current = todos[index]
-    const next = { ...current, ...(changes.title !== undefined && { title: requiredTitle(changes.title) }), ...(changes.description !== undefined && { description: optionalText(changes.description, "Description") }), ...(changes.priority !== undefined && { priority: priority(changes.priority) }), ...(changes.dueDate !== undefined && { dueDate: dueDate(changes.dueDate) }), ...(changes.tags !== undefined && { tags: tags(changes.tags) }), ...(changes.status !== undefined && { status: status(changes.status) }), updatedAt: this.clock().toISOString() }
+    const next = { ...current, ...(changes.title !== undefined && { title: requiredTitle(changes.title) }), ...(changes.description !== undefined && { description: optionalText(changes.description, "Description") }), ...(changes.priority !== undefined && { priority: priority(changes.priority) }), ...(changes.dueDate !== undefined && { dueDate: dueDate(changes.dueDate) }), ...(changes.tags !== undefined && { tags: tags(changes.tags) }), ...(changes.status !== undefined && { status: status(changes.status) }), ...(changes.completedAt !== undefined && { completedAt: changes.completedAt }), updatedAt: this.clock().toISOString() }
     todos[index] = next; await this.repository.writeAll(todos); return next
   }
-  async setCompleted(id, completed) { const todo = await this.get(id); return this.update(todo.id, { status: completed ? "completed" : "active" }) }
+  async setCompleted(id, completed) {
+    const todo = await this.get(id);
+    return this.update(todo.id, {
+      status: completed ? "completed" : "active",
+      completedAt: completed ? this.clock().toISOString() : null
+    })
+  }
   async remove(id) {
     const todos = await this.repository.readAll(); const index = todos.findIndex((todo) => todo.id === todoId(id))
     if (index === -1) throw new NotFoundError(id)
