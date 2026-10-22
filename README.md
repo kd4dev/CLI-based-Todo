@@ -2,6 +2,12 @@
 
 A production-quality, beginner-readable Todo application for the terminal. It stores todos locally in JSON and keeps the CLI, business logic, and persistence layers separate.
 
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-black?style=for-the-badge&logo=vercel)](https://cli-based-todo.vercel.app)
+[![Node.js](https://img.shields.io/badge/node.js-%3E%3D20-brightgreen?style=for-the-badge)](https://nodejs.org)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)](LICENSE)
+
+👉 **Experience the interactive terminal right in your browser**: [cli-based-todo.vercel.app](https://cli-based-todo.vercel.app)
+
 ## Features
 
 - **CRUD**: Add, view, update, complete, reopen, and delete todos
